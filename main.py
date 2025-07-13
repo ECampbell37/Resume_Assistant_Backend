@@ -21,6 +21,13 @@ app.add_middleware(
 user_memory = {}  # { user_id: file_bytes }
 
 
+############ Health ###################3
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
+
 ############ Analysis #################
 
 @app.post("/analyze")

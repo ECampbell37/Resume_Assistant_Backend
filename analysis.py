@@ -211,6 +211,7 @@ spelling_prompt = PromptTemplate(
     Check this resume for any spelling/grammatical errors. If there are errors, state where the error \
     is and the necessary change. If there are no errors, simply output 'Good job! No spelling errors detected.' \
     Only output the necessary text for this task (don't open with a statement or close with a statement). \
+    Format your response nicely with markdown. \
     Here is the resume:\n\n{resume}
     """
 

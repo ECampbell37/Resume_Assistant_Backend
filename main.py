@@ -32,6 +32,10 @@ user_memory = {}  # { user_id: file_bytes }
 def health_check():
     return {"status": "ok"}
 
+@app.get("/")
+def health_check():
+    return {"status": "ok"}
+
 
 ############ Analysis #################
 

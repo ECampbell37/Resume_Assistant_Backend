@@ -12,17 +12,14 @@ from langchain.prompts.chat import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate
 )
+from analysis import extract_text_from_pdf
+
 
 llm = ChatOpenAI(temperature=0.7, model="gpt-4o-mini")
 
 # Volatile in-memory chat history
 USER_CHATBOTS: Dict[str, ConversationChain] = {}
 
-def extract_text_from_pdf(file_bytes: bytes) -> str:
-    doc = fitz.open(stream=file_bytes, filetype="pdf")
-    text = "\n".join([page.get_text() for page in doc])
-    doc.close()
-    return text
 
 # Prompt template
 system_prompt = """

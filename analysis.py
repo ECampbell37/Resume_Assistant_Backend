@@ -239,6 +239,10 @@ pipeline = SequentialChain(
 def extract_text_from_pdf(file_bytes: bytes) -> str:
     """Extract plain text from uploaded PDF bytes."""
     doc = fitz.open(stream=file_bytes, filetype="pdf")
+    
+    if doc.page_count > 3:
+        raise ValueError("Your resume exceeds the 3-page limit. Please upload a shorter version.")
+    
     text = "\n".join([page.get_text() for page in doc])
     doc.close()
     return text

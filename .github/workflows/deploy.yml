@@ -33,9 +33,10 @@ jobs:
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
 
-      - name: Replace AWS_ACCOUNT_ID in task definition
+      - name: Inject secrets into ECS task definition
         run: |
           sed "s|{{AWS_ACCOUNT_ID}}|${{ secrets.AWS_ACCOUNT_ID }}|g" ecs-task-def-template.json > ecs-task-def.json
+          sed -i "s|{{OPENAI_API_KEY}}|${{ secrets.OPENAI_API_KEY }}|g" ecs-task-def.json
 
       - name: Render new ECS task definition with updated image
         id: render-task-def

@@ -29,7 +29,7 @@ summary_prompt = PromptTemplate(
     template="""
     You are a professional, friendly, and detail-oriented career assistant. \
     Speak directly to the candidate using “you.” Be specific, constructive, and easy to understand. \
-    Summarize the resume below in 3–5 concise sentences. \
+    Summarize the resume below in 3–5 concise sentences. Make it easy for the reader to read. \
     Focus on the candidate's background, relevant experience, technical and soft skills, and any notable achievements. \
     Speak directly to the candidate using 'you' (e.g., 'You graduated with...'). \
     Avoid generic filler — highlight what makes them stand out. \
@@ -53,57 +53,63 @@ rating_prompt = PromptTemplate(
 
     ---
 
-    ### Resume Evaluation Rubric (100 pts total)
+    ### Resume Evaluation Rubric
 
-    1. **Personal Information (20 pts)**
-    - Full name is included (5 pts)
-    - At least two contact methods (email, phone, LinkedIn, etc.) are clearly provided (5 pts)
-    - Location (city, state, or general region) is present (3 pts)
-    - Any links (LinkedIn, portfolio, GitHub) are written out in full (5 pts)
-    - Optional: a role headline or title like “Data Analyst” (2 pts)
+    1. **Personal Information**
+    - Full name is included 
+    - At least two contact methods (email, phone, LinkedIn, etc.) are clearly provided
+    - Location (city, state, or general region) is present 
 
-    2. **Summary or Objective (10 pts)**
-    - Clear professional identity or career goal (3 pts)
-    - Highlights strengths, experience, or goals (4 pts)
-    - Professional and concise tone (3 pts)
+    2. **Summary Section**
+    - Clear professional identity or career goal
+    - Highlights strengths, experience, or goals
+    - Professional and concise tone
 
-    3. **Work Experience (20 pts)**
-    - Job titles, companies, and dates are stated (5 pts)
-    - Responsibilities and/or achievements are described (5 pts)
-    - Specific or measurable examples are used (5 pts)
-    - Career relevance or growth is shown (5 pts)
+    3. **Work Experience**
+    - Job titles, companies, and dates are stated
+    - Responsibilities and/or achievements are described
+    - Specific or measurable examples are used
+    - Career relevance or growth is shown
 
-    4. **Education (20 pts)**
-    - School name and degree/certification listed (5 pts)
-    - Graduation date or timeframe included (3 pts)
-    - Honors, awards, or academic highlights mentioned (4 pts)
-    - Educational background is relevant or explained (5 pts)
-    - Optional: relevant courses or training listed (3 pts)
+    4. **Education**
+    - School name and degree/certification listed
+    - Graduation date or timeframe included
+    - Honors, awards, or academic highlights mentioned
+    - Educational background is relevant or explained
+    - Optional: relevant courses or training listed
 
-    5. **Skills and/or Projects (20 pts)**
-    - Relevant hard skills (tools, software, languages) listed (6 pts)
-    - Soft skills or workplace competencies included (3 pts)
-    - Projects (if present) include title, context, tools used (6 pts)
-    - Projects show initiative or relevance (5 pts)
+    5. **Skills and Projects**
+    - Relevant hard skills (tools, technologies, industry know-how) listed
+    - Soft skills or workplace competencies included
+    - Skills are relevant and non-repetitive
+    - Projects (if present) include title, context, tools used
+    - Projects show initiative or relevance
 
-    6. **Writing Quality (10 pts)**
-    - Spelling and grammar are strong (4 pts)
-    - Professional, concise word choice (3 pts)
-    - Clear structure and logical section flow (3 pts)
+    6. **Writing Quality**
+    - Spelling and grammar are strong
+    - Professional, concise word choice
+    - Action oriented language
+    - Clear structure and logical section flow
+    
+    
+    Score breakdown:
+    - A resume of 90-100% should be a fantastic resume for a very marketable candidate
+    - A resume of 80-89% should be a well structured resume for a reasonably good candidate
+    - A resume of 70-79% should be a decent resume for a decent candidate, with some issues here or there
+    - A resume of below 70% should have something significantly wrong with it (not enough qualifications, poor content, etc)
 
     ---
 
     First, write a line with the score:  
     **Overall Rating: __%**
 
-    Then, on the next line, write a paragraph explaining your reasoning. Highlight strengths, weaknesses, 
-    and suggest specific areas to improve.
-
-    Return individual scores for each section in parentheses, like:  
-    Rating: 85% (Personal Info: 18/20, Summary: 9/10, Work Exp: 16/20, Education: 17/20, Skills/Projects: 17/20, Writing: 8/10)
-
-
-    Do not suggest visual layout or formatting changes
+    Then, after a divider, on the next line, highlight each area of the rubric and how the resume measures on each category. \
+    Don't mention the rubric sections verbatim, but rather use them as a guide. \
+    Try to be as hyperspecific and as personalized to the resume and candidate as possible. \
+    Format your output using markdown. By the end, the cannidate should have a clear understanding of the quality of their resume. \
+    End with a short, hyper-personalized rationale for the overall rating.
+        
+    Do not suggest visual layout or formatting changes. Do not grade based on visual clarity. 
     
     Here is the resume to evaluate:
 
@@ -118,7 +124,7 @@ info_prompt = PromptTemplate(
     template="""
     Extract the following information from the resume: Full Name, Email, Phone Number, Location (city/state), \
     and relevant links (LinkedIn, GitHub, Portfolio, etc.).  
-    Use this format (one per line):  
+    Use this format (one per line, bold the titles):  
     Name: ___  
     Email: ___  
     Phone Number: ___  
@@ -143,6 +149,7 @@ roles_prompt = PromptTemplate(
     Speak directly to the candidate using “you.” Be specific, constructive, and easy to understand. \
     Based on the resume below, suggest 5 to 10 job roles the person is suited for. \
     List the name of the job role, and a quick 1-2 sentence explanation of the role and fit. \
+    Try to be as hyperspecific and as personalized to the resume and candidate as possible. \
     Lead with the statement "Here are some potential job roles you could pursue based on your resume: \n" \
     Only output the necessary text for this task (don't open with a statement or close with a statement). \
     Here is the resume:\n\n{resume}
@@ -159,8 +166,9 @@ strengths_prompt = PromptTemplate(
     You are a professional, friendly, and detail-oriented career assistant. \
     Speak directly to the candidate using “you.” Be specific, constructive, and easy to understand. \
     Based on the resume, list 3–5 specific strengths \
-    of the candidate and their resume. Each item should be 1–2 sentences.  
+    of the candidate and their resume. Each item should be 1–2 sentences, with a bolded section header.  
     Focus on stand-out traits, accomplishments, or qualities that add value. Avoid vague or generic praise. \
+    Try to be as hyperspecific and as personalized to the resume and candidate as possible. \
     Lead with the statement "These are some of your personal stengths as an applicant: \n" \
     Only output the necessary text for this task (don't open with a statement or close with a statement). \
     \n\n{resume}
@@ -177,6 +185,7 @@ improve_prompt = PromptTemplate(
     Suggest 2–5 specific improvements for the resume. \
     These can address clarity, completeness, or content. Avoid suggestions about formatting or dates in the future.  
     Be practical and constructive — no vague advice like 'be more specific.' 
+    Try to be as hyperspecific and as personalized to the resume and candidate as possible. \
     Do not suggest visual layout or formatting changes. Do not suggest improvements involving timing of dates. 
     If the resume is already strong, say so. Don't make up any problems that aren't really there. \
     Lead with the statement "These are some improvements you could make to enhance your resume: \n" \
@@ -194,7 +203,8 @@ tips_prompt = PromptTemplate(
     You are a professional, friendly, and detail-oriented career assistant. \
     Speak directly to the candidate using “you.” Be specific, constructive, and easy to understand. \
     Based on this resume, provide 3–5 personalized career tips. \
-    These may include project ideas, ways to gain experience, resources to explore, or networking advice.  
+    These may include project ideas, ways to gain experience, resources to explore, or networking advice. \
+    Try to be as hyperspecific and as personalized to the resume and candidate as possible. \
     Tips should be actionable, relevant, and easy to understand. Only include suggestions that would actually benefit them \
     and that they have not yet already completed. Help them land a job! \
     Lead with the statement "Here's a list of career tips you could implement to improve your chances of being hired: \n" \
@@ -208,10 +218,12 @@ tips_chain = LLMChain(llm=llm, prompt=tips_prompt, output_key="career_tips")
 spelling_prompt = PromptTemplate(
     input_variables=["resume"],
     template="""
-    Check this resume for any spelling/grammatical errors. If there are errors, state where the error \
-    is and the necessary change. If there are no errors, simply output 'Good job! No spelling errors detected.' \
+    Check this resume for spelling/grammatical errors. If there are errors, state where the error \
+    is and the necessary change. If you are listing errors, make sure to format in a visually appealing manner. \
+    If there are no errors, simply output 'Good job! No spelling errors detected.' \
+    Ignore minor phrasing innacuracies. Do not list spacing or formatting issues. Only typos. 
     Only output the necessary text for this task (don't open with a statement or close with a statement). \
-    Format your response nicely with markdown. \
+
     Here is the resume:\n\n{resume}
     """
 

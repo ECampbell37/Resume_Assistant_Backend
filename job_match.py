@@ -13,6 +13,7 @@ job_match_prompt = PromptTemplate(
     template="""
 You are an expert career advisor AI. Evaluate how well the resume below matches the job description provided.
 Base your evaluation ONLY on the text content, not formatting.
+Try to be as hyperspecific and as personalized to the resume and candidate as possible.
 
 Write the response **directly to the applicant** using “you” (e.g., “you should apply”) — never use their name or refer to them in the third person.
 
@@ -23,11 +24,11 @@ Write the response **directly to the applicant** using “you” (e.g., “you s
 {job_description}
 
 Provide a JSON response with the following fields:
-- match_percentage: A number from 0 to 100 representing how well the resume fits the job.
-- fit_category: One of "Underqualified", "Slightly Underqualified", "Ideal", "Slightly Overqualified", or "Overqualified".
-- matched_skills: List of resume elements that align with job requirements.
+- match_percentage: A number from 0 to 100 representing how well the resume fits the job experience requirements.
+- fit_category: One of "Underqualified", "Slightly Underqualified", "Average", "Ideal", or "Slightly Overqualified".
+- matched_skills: List of resume elements and specific skills that align with job requirements.
 - missing_skills: List of important skills/requirements from the job that the resume is missing.
-- recommendation: One paragraph with a professional recommendation about whether the person should apply, and why.
+- recommendation: One paragraph with a professional recommendation about whether the person should apply (don't be afraid to say no), their realtive competitiveness, and why.
 
 Respond only in raw JSON format.
 """

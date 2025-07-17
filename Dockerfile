@@ -18,5 +18,5 @@ COPY . .
 # Expose port
 EXPOSE 80
 
-# Run with Gunicorn + Uvicorn worker
-CMD ["gunicorn", "--bind", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker", "main:app"]
+# Run with Gunicorn + Uvicorn worker (90s timeout)
+CMD ["gunicorn", "--bind", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "90", "-w", "2", "main:app"]

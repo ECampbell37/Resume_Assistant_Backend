@@ -6,6 +6,8 @@ from fastapi.responses import JSONResponse
 from analysis import analyze_resume
 from chatbot import extract_text_from_pdf, get_or_create_chatbot
 from job_match import run_job_match
+from revision import rewrite_resume
+from fastapi.responses import PlainTextResponse
 
 app = FastAPI()
 
@@ -113,4 +115,24 @@ async def job_match(user_id: str = Form(...), job_description: str = Form(...)):
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Job match failed: {str(e)}")
+
+
+
+############ Revision Mode #################
+
+
+@app.post("/revision")
+async def revision_mode(user_id: str = Form(...)):
+    if user_id not in user_memory:
+        raise HTTPException(status_code=404, detail="No resume found. Please load it first.")
+
+    try:
+        file_bytes = user_memory[user_id]
+        resume_text = extract_text_from_pdf(file_bytes)
+        rewritten_text = rewrite_resume(resume_text)
+        return PlainTextResponse(content=rewritten_text)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Resume rewrite failed: {str(e)}")
 

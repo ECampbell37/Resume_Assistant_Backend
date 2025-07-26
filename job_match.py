@@ -6,7 +6,7 @@ from langchain.chat_models import ChatOpenAI
 import json
 import re
 
-llm = ChatOpenAI(temperature=0.1, model="gpt-4o-mini")
+llm = ChatOpenAI(temperature=0.3, model="gpt-4o-mini")
 
 job_match_prompt = PromptTemplate(
     input_variables=["resume", "job_description"],
@@ -38,13 +38,14 @@ The candidate does not need to match every skill in the job description to earn 
 Take an all encompassing view, including where the candidate is in their career, the type of company it is, what the target audience for the job post is, and what the hiring team's relative expectations are. Take a deep, nauanced look at the match. 
 If the candidate is missing multiple years of required experience, or they do not have the required level of education (i.e. PhD), they cannot earn higher than "Somewhat Qualified. This is an impotant factor.
 If the candidate is missing a large number of required skills or expectations for the role, they cannot earn higher than "Good Fit".
+Do not say someone is a strong match (or that they should apply) if they would have trouble being selected for the role. 
 Don't be too picky about industry knowledge. If the candidate is highly competitive, but lacks specific industry knowledge or industry experience, you should still give them "Ideal Match". 
 
 Provide a JSON response with the following fields:
 - fit_category: One of the values above. Make sure it matches your analysis and recommendation.
 - matched_skills: List of resume elements and specific skills that align with job requirements.
 - missing_skills: List of important skills or experiences from the job description that the resume is missing. Even if the candidate is ideal, list whatever expectations they do not match with the job description.
-- recommendation: A charismatic, concise, straight to the point paragraph written directly to the applicant. Include your recommendation to apply or not, and explain your rationale in a way that clearly supports the fit_category you've chosen. If saying they should apply, be encouraging. If they are missing years of experience or education requirements, be realistic and do not enthusiastically tell them to apply.
+- recommendation: A charismatic, concise, straight to the point paragraph written directly to the applicant. Include your recommendation to apply or not, and explain your rationale in a way that clearly supports the fit_category you've chosen. If saying they should apply, be encouraging. If they are missing multiple years of experience or education requirements, be realistic and do not enthusiastically tell them to apply.
 
 Respond only in raw JSON format.
 """

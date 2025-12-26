@@ -1,22 +1,23 @@
 # Dockerfile
 FROM python:3.11-slim
 
-# Set envs for logging and performance
+# Don't write .pyc files + flush output
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set working directory
+# Working directory
 WORKDIR /app
 
 # Install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app code
+# Copy app
 COPY . .
 
-# Expose port
-EXPOSE 80
+# Render assigns a dynamic port
+ENV PORT=10000
+EXPOSE 10000
 
-# Run with Gunicorn + Uvicorn worker (90s timeout)
-CMD ["gunicorn", "--bind", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "90", "-w", "2", "main:app"]
+# Start server (Gunicorn + Uvicorn worker)
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "main:app", "--bind", "0.0.0.0:$PORT", "--workers", "2", "--timeout", "90"]

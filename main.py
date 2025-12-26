@@ -35,7 +35,7 @@ def health_check():
     return {"status": "ok"}
 
 @app.get("/")
-def health_check():
+def root():
     return {"status": "ok"}
 
 

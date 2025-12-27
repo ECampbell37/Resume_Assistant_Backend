@@ -17,7 +17,8 @@ app.add_middleware(
         "https://resume-assistant.website",
         "https://www.resume-assistant.website",
         "https://resume-assistant-inky.vercel.app",
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "https://resume-assistant-backend.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],

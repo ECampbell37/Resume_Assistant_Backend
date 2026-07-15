@@ -8,6 +8,9 @@ from chatbot import extract_text_from_pdf, get_or_create_chatbot
 from job_match import run_job_match
 from revision import rewrite_resume
 from fastapi.responses import PlainTextResponse
+from typing import List, Optional
+from pydantic import BaseModel
+from resume_builder import build_resume
 
 app = FastAPI()
 
@@ -137,3 +140,87 @@ async def revision_mode(user_id: str = Form(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Resume rewrite failed: {str(e)}")
 
+
+
+
+
+# --- Pydantic models for the create-resume form ---
+
+class PersonalInfoModel(BaseModel):
+    fullName: str
+    email: Optional[str] = ""
+    phone: Optional[str] = ""
+    location: Optional[str] = ""
+    linkedin: Optional[str] = ""
+    otherLinks: Optional[str] = ""
+
+class ExperienceModel(BaseModel):
+    jobTitle: str
+    company: str
+    location: Optional[str] = ""
+    startDate: Optional[str] = ""
+    endDate: Optional[str] = ""
+    responsibilities: Optional[str] = ""
+
+class EducationModel(BaseModel):
+    school: str
+    degree: Optional[str] = ""
+    fieldOfStudy: Optional[str] = ""
+    location: Optional[str] = ""
+    graduationDate: Optional[str] = ""
+    honors: Optional[str] = ""
+
+class ProjectModel(BaseModel):
+    name: str
+    description: Optional[str] = ""
+    technologies: Optional[str] = ""
+
+class ResumeFormData(BaseModel):
+    personalInfo: PersonalInfoModel
+    summary: Optional[str] = ""
+    experience: List[ExperienceModel] = []
+    education: List[EducationModel] = []
+    skills: Optional[str] = ""
+    projects: List[ProjectModel] = []
+    certifications: Optional[str] = ""
+    
+
+############ Create Resume #################
+
+@app.post("/generate-resume")
+async def generate_resume(data: ResumeFormData):
+    if not data.personalInfo.fullName.strip():
+        raise HTTPException(status_code=400, detail="Full name is required.")
+    if not data.personalInfo.email.strip():
+        raise HTTPException(status_code=400, detail="Email is required.")
+    if not data.personalInfo.location.strip():
+        raise HTTPException(status_code=400, detail="Location is required.")
+    if not data.experience or any(not e.jobTitle.strip() or not e.company.strip() for e in data.experience):
+        raise HTTPException(status_code=400, detail="At least one complete job entry is required.")
+    if not data.education or any(not e.school.strip() for e in data.education):
+        raise HTTPException(status_code=400, detail="At least one complete education entry is required.")
+
+    try:
+        contact_parts = [
+            v.strip()
+            for v in [
+                data.personalInfo.email,
+                data.personalInfo.phone,
+                data.personalInfo.location,
+                data.personalInfo.linkedin,
+                data.personalInfo.otherLinks,
+            ]
+            if v and v.strip()
+        ]
+        contact_line = " | ".join(contact_parts)
+
+        body_markdown = build_resume(data.dict())
+
+        header = f"# {data.personalInfo.fullName.strip()}"
+        if contact_line:
+            header += f"\n\n{contact_line}"
+
+        full_resume = f"{header}\n\n{body_markdown}".strip()
+        return PlainTextResponse(content=full_resume)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Resume generation failed: {str(e)}")

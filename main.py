@@ -183,6 +183,7 @@ class ResumeFormData(BaseModel):
     skills: Optional[str] = ""
     projects: List[ProjectModel] = []
     certifications: Optional[str] = ""
+    additionalNotes: Optional[str] = ""
     
 
 ############ Create Resume #################

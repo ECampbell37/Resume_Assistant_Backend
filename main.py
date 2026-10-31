@@ -7,6 +7,7 @@ from analysis import analyze_resume
 from chatbot import extract_text_from_pdf, get_or_create_chatbot
 from job_match import run_job_match
 from revision import rewrite_resume
+from tailor import tailor_resume
 from fastapi.responses import PlainTextResponse
 from typing import List, Optional
 from pydantic import BaseModel
@@ -139,6 +140,32 @@ async def revision_mode(user_id: str = Form(...)):
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Resume rewrite failed: {str(e)}")
+
+
+
+############ Tailor Mode #################
+
+
+@app.post("/tailor")
+async def tailor_mode(
+    user_id: str = Form(...),
+    job_description: str = Form(...),
+    context: str = Form(""),
+):
+    if user_id not in user_memory:
+        raise HTTPException(status_code=404, detail="No resume found. Please load it first.")
+    if not job_description.strip():
+        raise HTTPException(status_code=400, detail="Job description is required.")
+
+    try:
+        file_bytes = user_memory[user_id]
+        resume_text = extract_text_from_pdf(file_bytes)  # might raise page len error
+        tailored_text = tailor_resume(resume_text, job_description, context[:1500])
+        return PlainTextResponse(content=tailored_text)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Resume tailoring failed: {str(e)}")
 
 
 

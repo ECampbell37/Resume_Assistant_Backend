@@ -15,7 +15,7 @@ llm = ChatOpenAI(temperature=0.7, model=llm_model)
 ################## PROMPT & CHAIN ##################
 
 rewrite_prompt = PromptTemplate(
-    input_variables=["resume"],
+    input_variables=["resume", "context"],
     template="""
 You are an intelligent, helpful resume writing expert. Rewrite the following resume to improve clarity, impact, and professionalism.
 
@@ -24,9 +24,11 @@ Your task:
 - Condense verbose phrases without losing meaning
 - Improve grammar and writing quality
 - Maintain a clean, modern tone suitable for ATS systems
-- Preserve all existing content (don’t hallucinate new info)
+- Preserve all existing content (don’t hallucinate new info), unless the candidate's context below says otherwise
 - Make changes that flow better, or that are more logically coherent or organized than the original
 - Format the revised resume using **Markdown** with clear headings, bullet points, and sections
+
+The candidate may provide optional context: instructions about the kind of revision they want, and extra facts about their background. Follow their instructions, even when they conflict with the guidelines above, and treat any facts they give as true and usable. If the context says "None provided", ignore it.
 
 Instructions:
 - Use markdown headers (e.g., `## Education`) for each major section
@@ -39,6 +41,9 @@ Jazz up this resume and get creative!
 --- Original Resume ---
 {resume}
 
+--- Candidate Context ---
+{context}
+
 --- Rewritten Resume in Markdown ---
 """
 )
@@ -47,6 +52,9 @@ rewrite_chain = LLMChain(llm=llm, prompt=rewrite_prompt)
 
 ################## MAIN FUNCTION ##################
 
-def rewrite_resume(resume_text: str) -> str:
-    """Run the LangChain rewriting logic on resume text."""
-    return rewrite_chain.run({"resume": resume_text})
+def rewrite_resume(resume_text: str, context: str = "") -> str:
+    """Run the LangChain rewriting logic on resume text, with optional user context."""
+    return rewrite_chain.run({
+        "resume": resume_text,
+        "context": context.strip() or "None provided",
+    })

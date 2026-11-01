@@ -127,14 +127,14 @@ async def job_match(user_id: str = Form(...), job_description: str = Form(...)):
 
 
 @app.post("/revision")
-async def revision_mode(user_id: str = Form(...)):
+async def revision_mode(user_id: str = Form(...), context: str = Form("")):
     if user_id not in user_memory:
         raise HTTPException(status_code=404, detail="No resume found. Please load it first.")
 
     try:
         file_bytes = user_memory[user_id]
         resume_text = extract_text_from_pdf(file_bytes)
-        rewritten_text = rewrite_resume(resume_text)
+        rewritten_text = rewrite_resume(resume_text, context[:1500])
         return PlainTextResponse(content=rewritten_text)
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
